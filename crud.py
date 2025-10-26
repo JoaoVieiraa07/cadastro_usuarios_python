@@ -12,3 +12,7 @@ def criar_usuario(db: Session, user: UserCreate): #chamando a função do usercr
     db.refresh(db_user)
     return db_user
 
+def excluir_usuario(db: Session, user_id: int):
+    user = db.query(User).filter(User.id == user.id).first()
+    db.delete(user)
+    db.commit()
