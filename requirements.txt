@@ -18,3 +18,5 @@ uvicorn==0.38.0
 antiorm==1.2.1
 db==0.1.1
 db-sqlite3==0.0.1
+
+uvicorn cadastro_contatos_python.main:app --reload
