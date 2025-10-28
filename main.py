@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from . import crud, models, schema as schemas
 from .database import engine, get_db
+from typing import List
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -20,6 +21,20 @@ def ver_usuario(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return db_user
+
+@app.get("/users",response_model=List[schemas.UserResponse])
+def listar_usuarios(db: Session = Depends(get_db)):
+    db_user = db.query(models.User).all()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail = "Nenhum usuário encontrado")
+    return db_user
+
+@app.put("/users/{user_id}")
+def atualizar_usuario(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
+    db_user = crud.pegar_id(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    return crud.atualizar_usuario(db=db, user_id=user_id, user=user)
 
 @app.delete("/users/{user_id}")
 def excluir_usuario(user_id: int, db: Session = Depends(get_db)):
