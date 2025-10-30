@@ -10,14 +10,11 @@ def criar_usuario(db: Session, user: UserCreate): #chamando a função do usercr
     db_user = User(name=user.name, email=user.email, telephone =user.telephone) #apenas fazendo 
     db.add(db_user)
     db.commit()
-    db.refresh(db_user)
+    db.refresh(db_user)#atualiza informações no código 
     return db_user
 
-def atualizar_usuario(db: Session, user_id: int, user: UserUpdate):
-    db_user = db.query(User).filter(User.id == user_id).first()
-    if not db_user:
-        return None
-    update_data = user.model_dump(exclude_unset=True) 
+def atualizar_usuario(db: Session, db_user: User, user: UserUpdate):
+    update_data = user.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_user, key, value)
     db.commit()
@@ -27,10 +24,7 @@ def atualizar_usuario(db: Session, user_id: int, user: UserUpdate):
 def pegar_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
 
-def excluir_usuario(db: Session, user_id: int):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        return None
-    db.delete(user)
+def excluir_usuario(db: Session,db_user: User):
+    db.delete(db_user)
     db.commit() 
-    return user
+    return db_user
